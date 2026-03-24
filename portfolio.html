@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nayyara's Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace'],
+                    },
+                    colors: {
+                        dark: '#0a0a0a',
+                        surface: '#121212',
+                        primary: '#6366f1', // Indigo 500
+                        secondary: '#a855f7', // Purple 500
+                        accent: '#14b8a6', // Teal 500
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'spin-slow': 'spin 12s linear infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(18, 18, 18, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .glass-card {
+            background: rgba(30, 30, 30, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            background: rgba(40, 40, 40, 0.6);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Gradient Text */
+        .text-gradient {
+            background: linear-gradient(to right, #6366f1, #a855f7, #14b8a6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Reveal Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Background Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-color: #0a0a0a;
+        }
+        
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="bg-dark text-gray-300 font-sans selection:bg-primary selection:text-white overflow-x-hidden">
+
+    <!-- Interactive Background -->
+    <canvas id="bg-canvas"></canvas>
+    <div class="noise-overlay"></div>
+
+    <!-- Background Blobs (Decoration) -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/20 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob"></div>
+        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-secondary/20 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[-10%] left-[20%] w-96 h-96 bg-accent/20 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold font-mono text-white tracking-tighter">
+                NAYYA's
+                <span class="text-primary">.</span>PORTFOLIO
+            </a>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="#home" class="text-sm font-medium hover:text-white transition-colors relative group">
+                    Home
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
+                </a>
+                <a href="#about" class="text-sm font-medium hover:text-white transition-colors relative group">
+                    About
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
+                </a>
+                <a href="#projects" class="text-sm font-medium hover:text-white transition-colors relative group">
+                    Work
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
+                </a>
+                <a href="#contact" class="px-5 py-2 rounded-full border border-primary/50 text-primary hover:bg-primary hover:text-white transition-all text-sm font-medium">
+                    Let's Talk
+                </a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden text-white focus:outline-none" id="mobile-menu-btn">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden absolute top-full left-0 w-full glass border-t border-gray-800" id="mobile-menu">
+            <div class="flex flex-col p-6 space-y-4">
+                <a href="#home" class="text-gray-300 hover:text-white">Home</a>
+                <a href="#about" class="text-gray-300 hover:text-white">About</a>
+                <a href="#projects" class="text-gray-300 hover:text-white">Work</a>
+                <a href="#contact" class="text-primary font-medium">Contact Me</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center justify-center relative pt-20">
+        <div class="container mx-auto px-6 z-10 grid md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6 reveal">
+                <div class="inline-block px-3 py-1 rounded-full border border-gray-700 bg-gray-900/50 backdrop-blur-sm text-xs font-mono text-accent mb-2">
+                    Available for freelance work
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold text-white leading-tight">
+                    Turning Ideas to  <br>
+                    <span class="text-gradient">Real Products</span>
+                </h1>
+                <p class="text-lg text-gray-400 max-w-lg leading-relaxed">
+                   I'm a Computer Science student who turns ideas into real products, blending clean code with thoughtful design to build web apps people actually enjoy using.
+                </p>
+                <div class="flex flex-wrap gap-4 pt-4">
+                    <a href="#projects" class="px-8 py-3 bg-white text-black font-semibold rounded-full hover:bg-gray-200 transition-colors flex items-center gap-2">
+                        View Work <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="#contact" class="px-8 py-3 glass text-white font-semibold rounded-full hover:bg-white/10 transition-colors">
+                        Get In Touch
+                    </a>
+                </div>
+                
+                <div class="flex items-center gap-6 pt-8 text-gray-500">
+                    <a href="https://github.com/nayyaraazra" class="hover:text-white transition-colors"><i class="fab fa-github text-xl"></i></a>
+                    <!-- <a href="#" class="hover:text-blue-400 transition-colors"><i class="fab fa-twitter text-xl"></i></a> -->
+                    <a href="www.linkedin.com/in/nayyara-aqila-azra" class="hover:text-blue-600 transition-colors"><i class="fab fa-linkedin text-xl"></i></a>
+                    <a href="#" class="hover:text-pink-500 transition-colors"><i class="fab fa-dribbble text-xl"></i></a>
+                </div>
+            </div>
+
+            <!-- Hero Visual/Decoration -->
+            <div class="relative hidden md:block reveal delay-200">
+                <div class="relative w-full aspect-square max-w-[500px] mx-auto">
+                    <!-- Abstract geometric composition -->
+                    <div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-secondary/20 rounded-full blur-3xl animate-pulse"></div>
+                    <div class="glass-card absolute top-10 right-10 w-2/3 h-2/3 rounded-2xl z-20 p-6 flex flex-col justify-between animate-float">
+                        <div class="flex justify-between items-start">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
+                                <i class="fas fa-code text-white text-sm"></i>
+                            </div>
+                            <i class="fas fa-ellipsis-h text-gray-500"></i>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="h-2 w-3/4 bg-gray-700 rounded-full"></div>
+                            <div class="h-2 w-1/2 bg-gray-700 rounded-full"></div>
+                            <div class="h-2 w-full bg-gray-700 rounded-full"></div>
+                        </div>
+                        <div class="pt-4 border-t border-gray-700">
+                             <div class="flex items-center gap-2">
+                                 <span class="text-xs font-mono text-green-400">● Live Preview</span>
+                             </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card absolute bottom-10 left-10 w-1/2 h-40 rounded-xl z-30 p-5 flex flex-col justify-center animate-float" style="animation-delay: -3s;">
+                        <div class="text-4xl font-bold text-white mb-1">10+</div>
+                        <div class="text-sm text-gray-400">Projects Built</div>
+                        <div class="mt-3 flex -space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-gray-600 border-2 border-surface"></div>
+                            <div class="w-8 h-8 rounded-full bg-gray-500 border-2 border-surface"></div>
+                            <div class="w-8 h-8 rounded-full bg-gray-400 border-2 border-surface"></div>
+                            <div class="w-8 h-8 rounded-full bg-surface border-2 border-gray-700 flex items-center justify-center text-[10px] text-gray-400">+++</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce hidden md:block text-gray-500">
+            <i class="fas fa-chevron-down text-xl"></i>
+        </div>
+    </section>
+
+    <!-- About / Skills Section (Bento Grid Style) -->
+    <section id="about" class="py-24 relative">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">About & <span class="text-gradient">Skills</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">A glimpse into my digital toolbox and professional journey.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Main About Card -->
+                <div class="md:col-span-2 glass-card rounded-2xl p-8 reveal">
+                    <h3 class="text-2xl font-bold text-white mb-4">Who I Am</h3>
+                    <p class="text-gray-400 leading-relaxed mb-6">
+                        I'm a student developer who thinks good software should feel effortless to use. I nerd out on over both the logic and the look, because I believe code and design are two sides of the same coin. I specialize in building responsive, accessible, and performant web applications. My journey started with tweaking HTML on high school's Informatics subject forums, and now I architect complex systems for solve real-world problem
+                        <!-- global clients. -->
+                    </p>
+                    <p class="text-gray-400 leading-relaxed">
+                        When I'm not coding, you can find me reading a page-turner, travelling, or scheming on a new side quest.
+                    </p>
+                </div>
+
+                <!-- Tech Stack - Frontend -->
+                <div class="glass-card rounded-2xl p-8 reveal delay-100 flex flex-col justify-center">
+                    <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                        <i class="fas fa-layer-group text-secondary"></i> Frontend
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-gray-800 rounded-lg text-sm text-gray-300 border border-gray-700">React</span>
+                        <span class="px-3 py-1 bg-gray-800 rounded-lg text-sm text-gray-300 border border-gray-700">Vue.js</span>
+                        <span class="px-3 py-1 bg-gray-800 rounded-lg text-sm text-gray-300 border border-gray-700">Tailwind</span>
+                        <!-- <span class="px-3 py-1 bg-gray-800 rounded-lg text-sm text-gray-300 border border-gray-700">Three.js</span> -->
+                        <span class="px-3 py-1 bg-gray-800 rounded-lg text-sm text-gray-300 border border-gray-700">JavaScript</span>
+                        <span class="px-3 py-1 bg-gray-800 rounded-lg text-sm text-gray-300 border border-gray-700">Next.js</span>
+                    </div>
+                </div>
+
+                <!-- Tech Stack - Backend -->
+                <div class="glass-card rounded-2xl p-8 reveal delay-100 flex flex-col justify-center">
+                    <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                        <i class="fas fa-server text-accent"></i> Backend
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-gray-800 rounded-lg text-sm text-gray-300 border border-gray-700">Node.js</span>
+                        <span class="px-3 py-1 bg-gray-800 rounded-lg text-sm text-gray-300 border border-gray-700">Python</span>
+                        <span class="px-3 py-1 bg-gray-800 rounded-lg text-sm text-gray-300 border border-gray-700">MySQL</span>
+                        <span class="px-3 py-1 bg-gray-800 rounded-lg text-sm text-gray-300 border border-gray-700">SQL Server</span>
+                        <span class="px-3 py-1 bg-gray-800 rounded-lg text-sm text-gray-300 border border-gray-700">Laravel</span>
+                    </div>
+                </div>
+
+                <!-- Stats / Soft Skills -->
+                <div class="md:col-span-2 glass-card rounded-2xl p-8 reveal flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div class="flex items-center gap-4 w-full md:w-auto">
+                        <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
+                            <i class="fas fa-rocket text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold">Fast Performance</h4>
+                            <p class="text-sm text-gray-500">Optimized for speed</p>
+                        </div>
+                    </div>
+                    <div class="w-px h-12 bg-gray-800 hidden md:block"></div>
+                    <div class="flex items-center gap-4 w-full md:w-auto">
+                        <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400">
+                            <i class="fas fa-mobile-alt text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold">Responsive</h4>
+                            <p class="text-sm text-gray-500">Works on any device</p>
+                        </div>
+                    </div>
+                    <div class="w-px h-12 bg-gray-800 hidden md:block"></div>
+                    <div class="flex items-center gap-4 w-full md:w-auto">
+                        <div class="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-400">
+                            <i class="fas fa-search text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold">SEO Friendly</h4>
+                            <p class="text-sm text-gray-500">Search engine ready</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-24 bg-black/20">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 reveal">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Selected <span class="text-gradient">Work</span></h2>
+                    <p class="text-gray-400">Here are some of the projects I've brought to life.</p>
+                </div>
+                <a href="https://github.com/nayyaraazra" class="hidden md:flex items-center gap-2 text-primary hover:text-white transition-colors mt-4 md:mt-0">
+                    View Github <i class="fab fa-github"></i>
+                </a>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project Card 1 -->
+                <div class="glass-card rounded-xl overflow-hidden group reveal">
+                    <div class="h-48 bg-gray-800 relative overflow-hidden">
+                        <!-- Placeholder for Project Image -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-indigo-900 to-purple-900 group-hover:scale-110 transition-transform duration-500 flex items-center justify-center">
+                            <i class="fas fa-chart-line text-5xl text-white/20"></i>
+                        </div>
+                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                            <a href="#" class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-primary hover:text-white transition-colors" title="View Code"><i class="fab fa-github"></i></a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-primary hover:text-white transition-colors" title="Live Demo"><i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <span class="text-xs font-mono text-accent mb-2 block">Algorithm Visualizer</span>
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">FloodRoute System</h3>
+                        <p class="text-gray-400 text-sm mb-4 line-clamp-2">A web app that calculates optimal emergency logistics routes during flood events, powered by algorithmic search and live weather data from Open-Meteo API</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs px-2 py-1 bg-white/5 rounded text-gray-300">React</span>
+                            <span class="text-xs px-2 py-1 bg-white/5 rounded text-gray-300">JavaScript</span>
+                            <span class="text-xs px-2 py-1 bg-white/5 rounded text-gray-300">Tailwind</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Card 2 -->
+                <div class="glass-card rounded-xl overflow-hidden group reveal delay-100">
+                    <div class="h-48 bg-gray-800 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-teal-900 to-emerald-900 group-hover:scale-110 transition-transform duration-500 flex items-center justify-center">
+                            <i class="fas fa-robot text-5xl text-white/20"></i>
+                        </div>
+                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                            <a href="#" class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-primary hover:text-white transition-colors"><i class="fab fa-github"></i></a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-primary hover:text-white transition-colors"><i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <span class="text-xs font-mono text-accent mb-2 block">EdTech</span>
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">StudyQuest</h3>
+                        <p class="text-gray-400 text-sm mb-4 line-clamp-2">A gamified desktop study planner with prioritized task scheduling, progress tracking, and clean MVC architecture, built to make studying feel less like a chore.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs px-2 py-1 bg-white/5 rounded text-gray-300">Java</span>
+                            <span class="text-xs px-2 py-1 bg-white/5 rounded text-gray-300">JavaFX</span>
+                            <span class="text-xs px-2 py-1 bg-white/5 rounded text-gray-300">SQLite</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Card 3 -->
+                <div class="glass-card rounded-xl overflow-hidden group reveal delay-200">
+                    <div class="h-48 bg-gray-800 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-pink-900 to-rose-900 group-hover:scale-110 transition-transform duration-500 flex items-center justify-center">
+                            <i class="fas fa-shopping-bag text-5xl text-white/20"></i>
+                        </div>
+                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                            <a href="#" class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-primary hover:text-white transition-colors"><i class="fab fa-github"></i></a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-primary hover:text-white transition-colors"><i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <span class="text-xs font-mono text-accent mb-2 block">E-Commerce</span>
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">NeonMarket</h3>
+                        <p class="text-gray-400 text-sm mb-4 line-clamp-2">A high-performance headless e-commerce frontend built for speed and conversion, featuring advanced filtering.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs px-2 py-1 bg-white/5 rounded text-gray-300">Vue 3</span>
+                            <span class="text-xs px-2 py-1 bg-white/5 rounded text-gray-300">Pinia</span>
+                            <span class="text-xs px-2 py-1 bg-white/5 rounded text-gray-300">Supabase</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section (Timeline) -->
+    <!-- <section id="experience" class="py-24">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-16 text-center reveal">Professional <span class="text-gradient">Journey</span></h2>
+            
+            <div class="max-w-3xl mx-auto relative"> -->
+                <!-- Timeline Line -->
+                <!-- <div class="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 h-full w-px bg-gradient-to-b from-primary via-secondary to-transparent"></div> -->
+
+                <!-- Item 1 -->
+                <!-- <div class="relative z-10 mb-12 group reveal">
+                    <div class="flex flex-col md:flex-row items-center justify-between w-full">
+                        <div class="md:w-5/12 order-2 md:order-1 text-left md:text-right pl-8 md:pl-0">
+                            <h3 class="text-xl font-bold text-white">Senior Frontend Developer</h3>
+                            <p class="text-primary font-mono text-sm mb-2">TechFlow Solutions • 2023 - Present</p>
+                            <p class="text-gray-400 text-sm">Leading a team of 5 developers to rebuild the core company product using React and TypeScript. Improved load times by 40%.</p>
+                        </div>
+                        
+                        <div class="absolute left-[-5px] md:left-1/2 md:-ml-[5px] w-[11px] h-[11px] rounded-full bg-white border-2 border-primary order-1 md:order-2"></div>
+                        
+                        <div class="md:w-5/12 order-3 md:order-3"></div>
+                    </div>
+                </div> -->
+
+                <!-- Item 2 -->
+                <!-- <div class="relative z-10 mb-12 group reveal delay-100">
+                    <div class="flex flex-col md:flex-row items-center justify-between w-full">
+                        <div class="md:w-5/12 order-2 md:order-1"></div>
+                        
+                        <div class="absolute left-[-5px] md:left-1/2 md:-ml-[5px] w-[11px] h-[11px] rounded-full bg-dark border-2 border-secondary order-1 md:order-2"></div>
+                        
+                        <div class="md:w-5/12 order-2 md:order-3 pl-8 md:pl-0">
+                            <h3 class="text-xl font-bold text-white">Full Stack Developer</h3>
+                            <p class="text-secondary font-mono text-sm mb-2">Creative Agency X • 2021 - 2023</p>
+                            <p class="text-gray-400 text-sm">Developed interactive campaign websites for major brands. Handled backend logic with Node.js and AWS Lambda.</p>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- Item 3 -->
+                <!-- <div class="relative z-10 group reveal delay-200">
+                    <div class="flex flex-col md:flex-row items-center justify-between w-full">
+                        <div class="md:w-5/12 order-2 md:order-1 text-left md:text-right pl-8 md:pl-0">
+                            <h3 class="text-xl font-bold text-white">Junior Web Developer</h3>
+                            <p class="text-accent font-mono text-sm mb-2">StartUp Inc • 2019 - 2021</p>
+                            <p class="text-gray-400 text-sm">Collaborated on the initial MVP launch. Built responsive UI components and integrated REST APIs.</p>
+                        </div>
+                        
+                        <div class="absolute left-[-5px] md:left-1/2 md:-ml-[5px] w-[11px] h-[11px] rounded-full bg-dark border-2 border-accent order-1 md:order-2"></div>
+                        
+                        <div class="md:w-5/12 order-3 md:order-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 relative overflow-hidden">
+        <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-full bg-gradient-to-t from-primary/10 to-transparent pointer-events-none"></div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="glass-card rounded-2xl max-w-4xl mx-auto p-8 md:p-12 border border-white/10 reveal">
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white mb-6">Let's start a <br><span class="text-gradient">Project together</span></h2>
+                        <p class="text-gray-400 mb-8">Interested in working together? Fill out the form or send me an email. I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions.</p>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4 text-gray-300">
+                                <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-primary">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <span>nayyaraazra468@gmail.com</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300">
+                                <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-secondary">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <span>Surakarta, IDN</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form class="space-y-4" onsubmit="event.preventDefault(); alert('Thanks for the message! (This is a demo)');">
+                        <div>
+                            <label class="block text-xs font-mono text-gray-500 mb-1 uppercase">Name</label>
+                            <input type="text" class="w-full bg-dark border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors" placeholder="Budi Mulyono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-mono text-gray-500 mb-1 uppercase">Email</label>
+                            <input type="email" class="w-full bg-dark border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors" placeholder="budi@example.com">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-mono text-gray-500 mb-1 uppercase">Message</label>
+                            <textarea rows="4" class="w-full bg-dark border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors" placeholder="Tell me desc about your project..."></textarea>
+                        </div>
+                        <button class="w-full bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 rounded-lg hover:shadow-lg hover:shadow-primary/25 transition-all transform hover:-translate-y-1">
+                            Send Me Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 border-t border-gray-900 bg-black text-center relative z-10">
+        <p class="text-gray-500 text-sm">© 2026 My Portfolio. 
+            <!-- Built with  -->
+            <i class="fas fa-heart text-red-500 mx-1"></i>
+        </p>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // --- 1. Canvas Background Animation (Constellation Effect) ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray;
+
+        // Set canvas size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color) {
+                this.x = x;
+                this.y = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+                this.color = color;
+                this.speedX = this.directionX;
+                this.speedY = this.directionY;
+            }
+            // Draw individual particle
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            // Update particle position
+            update() {
+                if (this.x > canvas.width || this.x < 0) {
+                    this.directionX = -this.directionX;
+                }
+                if (this.y > canvas.height || this.y < 0) {
+                    this.directionY = -this.directionY;
+                }
+
+                // Mouse interaction (push away)
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx*dx + dy*dy);
+                if (distance < mouse.radius + this.size){
+                    if(mouse.x < this.x && this.x < canvas.width - this.size * 10){
+                        this.x += 2;
+                    }
+                    if(mouse.x > this.x && this.x > this.size * 10){
+                        this.x -= 2;
+                    }
+                    if(mouse.y < this.y && this.y < canvas.height - this.size * 10){
+                        this.y += 2;
+                    }
+                    if(mouse.y > this.y && this.y > this.size * 10){
+                        this.y -= 2;
+                    }
+                }
+
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        // Mouse object
+        let mouse = {
+            x: null,
+            y: null,
+            radius: (canvas.height/80) * (canvas.width/80)
+        }
+
+        window.addEventListener('mousemove', function(event){
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+
+        // Initialize particles
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = (Math.random() * 2) + 1;
+                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                let directionX = (Math.random() * 0.4) - 0.2;
+                let directionY = (Math.random() * 0.4) - 0.2;
+                let color = '#6366f1'; // Primary color
+
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+            }
+        }
+
+        // Connect particles with lines
+        function connect() {
+            let opacityValue = 1;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) + 
+                                   ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                    if (distance < (canvas.width/7) * (canvas.height/7)) {
+                        opacityValue = 1 - (distance/20000);
+                        ctx.strokeStyle = 'rgba(99, 102, 241,' + opacityValue * 0.15 + ')'; // Very faint lines
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+            
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+            connect();
+        }
+
+        // Handle Resize
+        window.addEventListener('resize', function(){
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+            mouse.radius = ((canvas.height/80) * (canvas.height/80));
+            init();
+        });
+
+        // Start Animation
+        init();
+        animate();
+
+
+        // --- 2. Scroll Reveal Animation ---
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target); // Only animate once
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+
+        // --- 3. Mobile Menu Toggle ---
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        // Close menu when clicking a link
+        menu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                menu.classList.add('hidden');
+            });
+        });
+
+    </script>
+</body>
+</html>
